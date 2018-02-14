@@ -5,7 +5,7 @@ class SARSA(object):
 
     def __init__(self, actions, epsilon=0.01, alpha=0.5, gamma=1):
         '''
-        Constructor for QLearning class
+        Constructor for SARSA class
 
         :param actions: list of actions allowed
         :param epsilon: thresold value for epsilon-greedy policy
