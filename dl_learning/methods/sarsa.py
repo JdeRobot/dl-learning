@@ -8,7 +8,7 @@ class SARSA(object):
         Constructor for SARSA class
 
         :param actions: list of actions allowed
-        :param epsilon: thresold value for epsilon-greedy policy
+        :param epsilon: threshold value for epsilon-greedy policy
         :param alpha: learning rate
         :param gamma: discount factor
         '''
