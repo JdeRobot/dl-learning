@@ -22,7 +22,7 @@ class QLearning(object):
         '''
         <S, A, R, S'>
         Q-learning Update:
-        Q(S,A) = Q(S,A) + alpha[R + gamma max(Q(next_S,a)) - Q(S,A)
+        Q(S,A) = Q(S,A) + alpha[R + gamma max(Q(S',A)) - Q(S,A)]
 
         :param state: actual state
         :param action: action selected
