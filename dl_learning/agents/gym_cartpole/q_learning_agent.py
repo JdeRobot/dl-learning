@@ -49,12 +49,12 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax1 = fig.add_subplot(211)
     ax1.plot(np.array(range(n_episodes)), steps_per_episode)
-    ax1.set_ylabel('steps')
+    ax1.set_ylabel('episode length')
 
     ax2 = fig.add_subplot(212)
     ax2.plot(np.array(range(n_episodes)), cumulative_reward)
     ax2.set_xlabel('episodes')
-    ax2.set_ylabel('cumulative rewards')
+    ax2.set_ylabel('episode reward')
 
     plt.show()
 
