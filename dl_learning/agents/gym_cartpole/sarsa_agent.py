@@ -1,9 +1,9 @@
+from collections import deque
 import gym
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from collections import deque
-from dl_learning.methods.q_learning import QLearning
+from dl_learning.methods.sarsa import SARSA
 
 
 if __name__ == "__main__":
@@ -14,13 +14,14 @@ if __name__ == "__main__":
 
     actions = range(env.action_space.n)
 
-    q_learning = QLearning(actions)
+    sarsa = SARSA(actions)
 
     cumulative_reward = np.array(range(n_episodes))
     steps_per_episode = np.array(range(n_episodes))
 
     for e in range(n_episodes):
         current_state = str(env.reset())
+        action = sarsa.get_action(current_state)
         done = False
         G = 0.0
         steps = 0
@@ -28,13 +29,14 @@ if __name__ == "__main__":
         while not done:
             env.render(mode='human')
 
-            action = q_learning.get_action(current_state)
-            obs, reward, done, info = env.step(action)
-            next_state = str(obs)
+            next_obs, reward, done, info = env.step(action)
+            next_state = str(next_obs)
+            next_action = sarsa.get_action(next_state)
 
-            q_learning.learn(current_state, action, reward, next_state)
+            sarsa.learn(current_state, action, reward, next_state, next_action)
 
             current_state = next_state
+            action = next_action
             steps += 1
             G += reward
 
@@ -59,3 +61,4 @@ if __name__ == "__main__":
     plt.show()
 
     env.close()
+    
