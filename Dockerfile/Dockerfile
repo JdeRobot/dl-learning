@@ -15,6 +15,7 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu xenial main" > /etc/apt/sources
 RUN apt-get update && apt-get install --no-install-recommends -y \
         sudo \
         wget \
+        nano \
         python-rosdep \
         python-rosinstall \
         python-vcstools \
@@ -74,6 +75,23 @@ RUN adduser --disabled-password --gecos '' docker && \
     adduser docker sudo && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+# clone player/stage
+RUN git clone https://github.com/playerproject/player && \
+    cd player && \
+    mkdir build && \
+    cd build && \
+    cmake -j2 -DBUILD_PYTHONCPP_BINDINGS=ON .. && \
+    sudo make install -j2
+
+RUN git clone https://github.com/rtv/Stage stage && \
+    cd stage && \
+    mkdir build && \
+    cd build && \
+    cmake -j2 .. && \
+    sudo make install -j2    
+
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib64/
+
 # clone gzweb
 ENV GZWEB_WS /home/docker/gzweb
 RUN hg clone https://bitbucket.org/osrf/gzweb $GZWEB_WS && \
@@ -86,8 +104,19 @@ RUN hg up default  &&\
 
 USER docker
 RUN /bin/bash -c "source /usr/share/gazebo/setup.sh" >> ~/.bashrc
+RUN /bin/bash -c "source /opt/ros/kinetic/setup.sh" >> ~/.bashrc
 RUN sudo -H pip install gym && \
     sudo -H pip3 install gym
+
+# clone dl repositories
+ENV PYTHONPATH $PYTHONPATH:/home/docker/dl-learning
+RUN git clone https://github.com/JdeRobot/robotics-gym.git && \
+    cd robotics-gym && \
+    sudo python setup.py install && \
+    cd && \
+    git clone https://github.com/JdeRobot/dl-learning.git && \
+    cd dl-learning && \
+    sudo -H pip install -r requirements.txt
 
 RUN wget -P /tmp/ https://bitbucket.org/osrf/gazebo_models/get/default.tar.gz &&\
     mkdir -p $HOME/.gazebo/models &&\
