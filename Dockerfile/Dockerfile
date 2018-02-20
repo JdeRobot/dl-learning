@@ -79,6 +79,8 @@ RUN adduser --disabled-password --gecos '' docker && \
     adduser docker sudo && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+USER docker
+
 # clone player/stage
 RUN cd && \
     git clone https://github.com/playerproject/player && \
@@ -100,20 +102,6 @@ RUN cd && \
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
 
-# clone gzweb
-ENV GZWEB_WS /home/docker/gzweb
-RUN cd && \
-    hg clone https://bitbucket.org/osrf/gzweb $GZWEB_WS && \
-    /bin/bash -c "source /usr/share/gazebo/setup.sh"
-WORKDIR $GZWEB_WS
-
-# build gzweb
-RUN hg up default  &&\
-    xvfb-run -s "-screen 0 1280x1024x24" ./deploy.sh -m -t
-
-USER docker
-RUN /bin/bash -c "source /usr/share/gazebo/setup.sh" >> ~/.bashrc
-RUN /bin/bash -c "source /opt/ros/kinetic/setup.sh" >> ~/.bashrc
 RUN sudo -H pip install gym && \
     sudo -H pip3 install gym
 
@@ -127,6 +115,18 @@ RUN cd && \
     git clone https://github.com/JdeRobot/dl-learning.git && \
     cd dl-learning && \
     sudo -H pip install -r requirements.txt
+
+# clone gzweb
+ENV GZWEB_WS /home/docker/gzweb
+RUN cd && \
+    hg clone https://bitbucket.org/osrf/gzweb $GZWEB_WS && \
+    /bin/bash -c "source /usr/share/gazebo/setup.sh" && \
+    cd ${GZWEB_WS} && \
+    hg up default  &&\
+    sudo xvfb-run -s "-screen 0 1280x1024x24" ./deploy.sh -m -t   
+
+RUN /bin/bash -c "source /usr/share/gazebo/setup.sh" >> ~/.bashrc && \
+    /bin/bash -c "source /opt/ros/kinetic/setup.sh" >> ~/.bashrc
 
 RUN wget -P /tmp/ https://bitbucket.org/osrf/gazebo_models/get/default.tar.gz &&\
     mkdir -p $HOME/.gazebo/models &&\
