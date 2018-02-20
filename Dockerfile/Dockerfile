@@ -80,7 +80,8 @@ RUN adduser --disabled-password --gecos '' docker && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # clone player/stage
-RUN git clone https://github.com/playerproject/player && \
+RUN cd && \
+    git clone https://github.com/playerproject/player && \
     cd player && \
     mkdir build && \
     cd build && \
@@ -88,7 +89,8 @@ RUN git clone https://github.com/playerproject/player && \
     make -j2 && \
     sudo make install -j2
 
-RUN git clone https://github.com/rtv/Stage stage && \
+RUN cd && \
+    git clone https://github.com/rtv/Stage stage && \
     cd stage && \
     mkdir build && \
     cd build && \
@@ -100,7 +102,8 @@ ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
 
 # clone gzweb
 ENV GZWEB_WS /home/docker/gzweb
-RUN hg clone https://bitbucket.org/osrf/gzweb $GZWEB_WS && \
+RUN cd && \
+    hg clone https://bitbucket.org/osrf/gzweb $GZWEB_WS && \
     /bin/bash -c "source /usr/share/gazebo/setup.sh"
 WORKDIR $GZWEB_WS
 
@@ -116,7 +119,8 @@ RUN sudo -H pip install gym && \
 
 # clone dl repositories
 ENV PYTHONPATH $PYTHONPATH:/home/docker/dl-learning
-RUN git clone https://github.com/JdeRobot/robotics-gym.git && \
+RUN cd && \
+    git clone https://github.com/JdeRobot/robotics-gym.git && \
     cd robotics-gym && \
     sudo python setup.py install && \
     cd && \
