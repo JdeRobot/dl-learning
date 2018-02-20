@@ -16,6 +16,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         sudo \
         wget \
         nano \
+        libgsl-dev \
+        swig \
+        libgeos++-dev \
+        libgeos-dev \
         python-rosdep \
         python-rosinstall \
         python-vcstools \
@@ -80,7 +84,8 @@ RUN git clone https://github.com/playerproject/player && \
     cd player && \
     mkdir build && \
     cd build && \
-    cmake -j2 -DBUILD_PYTHONCPP_BINDINGS=ON .. && \
+    cmake -DBUILD_PLAYERCC=ON -DBUILD_PYTHONCPP_BINDINGS=ON -j2 .. && \
+    make -j2 && \
     sudo make install -j2
 
 RUN git clone https://github.com/rtv/Stage stage && \
@@ -88,9 +93,10 @@ RUN git clone https://github.com/rtv/Stage stage && \
     mkdir build && \
     cd build && \
     cmake -j2 .. && \
+    make -j2 && \
     sudo make install -j2    
 
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib64/
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
 
 # clone gzweb
 ENV GZWEB_WS /home/docker/gzweb
