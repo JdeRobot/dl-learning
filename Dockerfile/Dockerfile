@@ -64,7 +64,7 @@ RUN sudo apt-get update && \
     sudo rm -rf /var/lib/apt/lists/*
 
 RUN sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
-RUN sudo echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list && \
+RUN sudo echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" | sudo tee -a /etc/apt/sources.list.d/gazebo-stable.list && \
     sudo apt-get update && \ 
     sudo apt-get install -q -y \
             gazebo7 \
