@@ -58,13 +58,15 @@ RUN sudo rosdep init &&\
 ENV ROS_DISTRO kinetic
 
 # from kinetic-desktop-xenial
-RUN sudo apt-get update && apt-get install -y \
+RUN sudo apt-get update && \
+    sudo apt-get install -y \
         ros-kinetic-desktop-full=1.3.1-0* && \
-        sudo rm -rf /var/lib/apt/lists/*
+    sudo rm -rf /var/lib/apt/lists/*
 
 RUN sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
 RUN sudo echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list && \
-    sudo apt-get update && apt-get install -q -y \
+    sudo apt-get update && \ 
+    sudo apt-get install -q -y \
             gazebo7 \
             libgazebo7-dev \
             imagemagick \
