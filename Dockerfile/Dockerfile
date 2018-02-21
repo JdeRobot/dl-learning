@@ -11,6 +11,11 @@ RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 421C365BD9FF1
 # setup sources.list
 RUN echo "deb http://packages.ros.org/ros/ubuntu xenial main" > /etc/apt/sources.list.d/ros-latest.list
 
+# setup environment
+EXPOSE 8080
+EXPOSE 7681
+EXPOSE 11345
+
 # install bootstrap tools
 RUN apt-get update && apt-get install --no-install-recommends -y \
         sudo \
@@ -39,47 +44,43 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     pip2 install --upgrade pip && \
     pip3 install --upgrade pip    
 
-# bootstrap rosdep
-RUN rosdep init &&\
-    rosdep update
-
-# install ros packages
-ENV ROS_DISTRO kinetic
-
-# from kinetic-desktop-xenial
-RUN apt-get update && apt-get install -y \
-    ros-kinetic-desktop-full=1.3.1-0* && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
-RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list && \
-    apt-get update && apt-get install -q -y \
-        gazebo7 \
-        libgazebo7-dev \
-        imagemagick \
-        libjansson-dev \
-        nodejs \
-        nodejs-legacy \
-        npm \
-        psmisc \
-        xvfb \
-        locate \ 
-        libignition-math2-dev \
-        ros-kinetic-turtlebot-simulator \
-        ros-kinetic-turtlebot3-simulations && \
-    apt-get clean && \        
-    rm -rf /var/lib/apt/lists/*
-
-# setup environment
-EXPOSE 8080
-EXPOSE 7681
-EXPOSE 11345
-
 RUN adduser --disabled-password --gecos '' docker && \
     adduser docker sudo && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER docker
+
+# bootstrap rosdep
+RUN sudo rosdep init &&\
+    sudo rosdep update
+
+# install ros packages
+ENV ROS_DISTRO kinetic
+
+# from kinetic-desktop-xenial
+RUN sudo apt-get update && apt-get install -y \
+        ros-kinetic-desktop-full=1.3.1-0* && \
+        sudo rm -rf /var/lib/apt/lists/*
+
+RUN sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
+RUN sudo echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list && \
+    sudo apt-get update && apt-get install -q -y \
+            gazebo7 \
+            libgazebo7-dev \
+            imagemagick \
+            libjansson-dev \
+            nodejs \
+            nodejs-legacy \
+            npm \
+            psmisc \
+            xvfb \
+            locate \ 
+            libignition-math2-dev \
+            ros-kinetic-turtlebot-simulator \
+            ros-kinetic-turtlebot3-simulations && \
+    sudo apt-get clean && \        
+    sudo rm -rf /var/lib/apt/lists/*
+
 
 # clone player/stage
 RUN cd && \
@@ -102,7 +103,7 @@ RUN cd && \
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
 
-RUN sudo -H pip install gym && \
+RUN sudo -H pip2 install gym && \
     sudo -H pip3 install gym
 
 # clone dl repositories
@@ -114,7 +115,8 @@ RUN cd && \
     cd && \
     git clone https://github.com/JdeRobot/dl-learning.git && \
     cd dl-learning && \
-    sudo -H pip install -r requirements.txt
+    sudo -H pip2 install -r requirements.txt && \
+    sudo -H pip3 install -r requirements.txt
 
 # clone gzweb
 ENV GZWEB_WS /home/docker/gzweb
