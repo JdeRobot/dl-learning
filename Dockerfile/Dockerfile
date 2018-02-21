@@ -17,7 +17,8 @@ EXPOSE 7681
 EXPOSE 11345
 
 # install bootstrap tools
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
         sudo \
         wget \
         nano \
@@ -52,7 +53,7 @@ USER docker
 
 # bootstrap rosdep
 RUN sudo rosdep init &&\
-    sudo rosdep update
+    rosdep update
 
 # install ros packages
 ENV ROS_DISTRO kinetic
@@ -127,14 +128,19 @@ RUN cd && \
     /bin/bash -c "source /usr/share/gazebo/setup.sh" && \
     cd ${GZWEB_WS} && \
     hg up default  &&\
-    sudo xvfb-run -s "-screen 0 1280x1024x24" ./deploy.sh -m -t   
+    sudo xvfb-run -s "-screen 0 1280x1024x24" ./deploy.sh -m
 
 RUN /bin/bash -c "source /usr/share/gazebo/setup.sh" >> ~/.bashrc && \
     /bin/bash -c "source /opt/ros/kinetic/setup.sh" >> ~/.bashrc
 
-RUN wget -P /tmp/ https://bitbucket.org/osrf/gazebo_models/get/default.tar.gz &&\
-    mkdir -p $HOME/.gazebo/models &&\
-    tar -xvf /tmp/default.tar.gz -C $HOME/.gazebo/models --strip 1 &&\
-    rm /tmp/default.tar.gz
+# RUN wget -P /tmp/ https://bitbucket.org/osrf/gazebo_models/get/default.tar.gz &&\
+#     mkdir -p $HOME/.gazebo/models &&\
+#     tar -xvf /tmp/default.tar.gz -C $HOME/.gazebo/models --strip 1 &&\
+#     rm /tmp/default.tar.gz
+
+RUN wget -P /tmp/ https://bitbucket.org/osrf/gazebo_models/get/default.tar.gz
+RUN mkdir -p $HOME/.gazebo/models
+RUN tar -xvf /tmp/default.tar.gz -C $HOME/.gazebo/models --strip 1
+RUN rm /tmp/default.tar.gz
 
 CMD gzserver --verbose & npm start
