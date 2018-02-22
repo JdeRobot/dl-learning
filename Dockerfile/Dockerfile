@@ -128,19 +128,17 @@ RUN cd && \
     /bin/bash -c "source /usr/share/gazebo/setup.sh" && \
     cd ${GZWEB_WS} && \
     hg up default  &&\
-    sudo xvfb-run -s "-screen 0 1280x1024x24" ./deploy.sh -m
+    sudo xvfb-run -s "-screen 0 1280x1024x24" ./deploy.sh -m -t
 
-RUN /bin/bash -c "source /usr/share/gazebo/setup.sh" >> ~/.bashrc && \
-    /bin/bash -c "source /opt/ros/kinetic/setup.sh" >> ~/.bashrc
+RUN echo "source /usr/share/gazebo/setup.sh" >> ~/.bashrc && \
+    echo "source /opt/ros/kinetic/setup.sh" >> ~/.bashrc
 
-# RUN wget -P /tmp/ https://bitbucket.org/osrf/gazebo_models/get/default.tar.gz &&\
-#     mkdir -p $HOME/.gazebo/models &&\
-#     tar -xvf /tmp/default.tar.gz -C $HOME/.gazebo/models --strip 1 &&\
-#     rm /tmp/default.tar.gz
+RUN wget -P /tmp/ https://bitbucket.org/osrf/gazebo_models/get/default.tar.gz &&\
+    mkdir -p $HOME/.gazebo/models &&\
+    sudo tar -xvf /tmp/default.tar.gz -C $HOME/.gazebo/models --strip 1 &&\
+    rm /tmp/default.tar.gz && \
+    sudo chown -R docker:docker $HOME/.gazebo/models
 
-RUN wget -P /tmp/ https://bitbucket.org/osrf/gazebo_models/get/default.tar.gz
-RUN mkdir -p $HOME/.gazebo/models
-RUN tar -xvf /tmp/default.tar.gz -C $HOME/.gazebo/models --strip 1
-RUN rm /tmp/default.tar.gz
+WORKDIR $HOME
 
 CMD gzserver --verbose & npm start
